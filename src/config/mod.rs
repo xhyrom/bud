@@ -5,17 +5,12 @@ use lazy_static::lazy_static;
 
 use crate::constants;
 
+mod default_values;
+
 #[derive(Debug, Deserialize)]
 pub struct Config {
-  #[serde(default = "DefaultValues::hello")]
+  #[serde(default = "default_values::hello")]
   pub hello: String,
-}
-
-struct DefaultValues;
-impl DefaultValues {
-  fn hello() -> String {
-    "world".to_string()
-  }
 }
 
 lazy_static! {
