@@ -3,18 +3,24 @@ use std::{fs::{self, File}, io};
 use serde::Deserialize;
 use lazy_static::lazy_static;
 
-use crate::constants;
+use crate::{constants};
 
-mod default_values;
+mod license_field;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
-  #[serde(default = "default_values::hello")]
-  pub hello: String,
+  #[serde(default = "license_field::default_values::license")]
+  pub license: license_field::License,
 }
 
 lazy_static! {
-  pub static ref CONFIG: Config = Config::new().unwrap();
+  pub static ref CONFIG: Config = match Config::new() {
+    Ok(config) => config,
+    Err(err) => {
+      logger::error!("Failed to load config: {}", err);
+      std::process::exit(1);
+    },
+  };
 }
 
 impl Config {
@@ -31,7 +37,12 @@ impl Config {
   fn initialize() -> Result<File, io::Error> {
     fs::create_dir_all((*constants::FOLDER).clone()).and_then(|_| {
       let config_path = format!("{}/config.toml", *constants::FOLDER);
-      fs::File::create(config_path)
+
+      if fs::metadata(&config_path).is_err() {
+        return fs::File::create(config_path)
+      }
+      
+      Ok(fs::File::open(config_path)?)
     })
   }
 }
