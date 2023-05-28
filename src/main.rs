@@ -2,5 +2,5 @@ mod config;
 mod constants;
 
 fn main() {
-    println!("🌷 Bud {:?}", (*config::CONFIG).license);
+    println!("🌷 Bud {:?}", config::CONFIG.license);
 }
