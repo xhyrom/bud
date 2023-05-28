@@ -1,0 +1,29 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install rust
+        run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
+
+      - name: Build
+        run: cargo build --verbose --all
+
+      - name: Test
+        run: cargo test --verbose --all
+
+      - name: Clippy
+        run: cargo clippy --verbose --all -- -D warnings
+
+      - name: Audit
+        run: cargo audit
