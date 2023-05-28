@@ -1,0 +1,21 @@
+[post-init]
+
+[post-init.universal]
+commands = [
+  "echo 'hello world'",
+]
+
+[post-init.windows]
+commands = [
+  "winver"
+]
+
+[post-init.linux]
+commands = [
+  "neofetch"
+]
+
+[post-init.darwin]
+commands = [
+  "neofetch"
+]

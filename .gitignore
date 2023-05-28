@@ -274,6 +274,4 @@ rust-project.json
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,rust,rust-analyzer,intellij,intellij+all,intellij+iml
 
-# Added by cargo
-
-/target
+tests/
