@@ -52,7 +52,7 @@ jobs:
         run: rustup target add ${{ matrix.target }}
 
       - name: Compile
-        run: cargo build -Z build-std --release --workspace --target=${{ matrix.target }}
+        run: cargo build --release --workspace --target=${{ matrix.target }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
