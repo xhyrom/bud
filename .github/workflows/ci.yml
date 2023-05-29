@@ -37,17 +37,10 @@ jobs:
         include:
           - target: x86_64-pc-windows-gnu
             archive: zip
-            podman: |
-              choco --yes install podman-cli
-              choco --yes install podman-machine
           - target: x86_64-unknown-linux-gnu
             archive: tar.gz
-            podman: |
-              sudo apt-get -y upgrade
-              sudo apt-get -y install podman
           - target: x86_64-apple-darwin
             archive: zip
-            podman: brew install podman
 
     steps:
       - uses: actions/checkout@v3
@@ -56,7 +49,9 @@ jobs:
         run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
       - name: Install podman
-        run: ${{ matrix.podman }}
+        run: |
+          sudo apt-get -y upgrade
+          sudo apt-get -y install podman
 
       - name: Install cross
         run: cargo install cross
