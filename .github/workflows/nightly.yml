@@ -1,0 +1,94 @@
+name: Nightly
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-pc-windows-gnu
+            archive: zip
+          - target: x86_64-unknown-linux-musl
+            archive: tar.gz
+          - target: x86_64-apple-darwin
+            archive: zip
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install rust
+        run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
+
+      - name: Test
+        run: cargo test --verbose --all
+
+      - name: Clippy
+        run: cargo clippy --verbose --all -- -D warnings
+
+      - name: Audit
+        run: cargo audit
+
+      - name: Compile
+        id: compile
+        uses: rust-build/rust-build.action@7d5b0c135ddb825f7692d4d2d75e598184d15cec
+        with:
+          RUSTTARGET: ${{ matrix.target }}
+          ARCHIVE_TYPES: ${{ matrix.archive }}
+          UPLOAD_MODE: none
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.target }}
+          path: |
+            ${{ steps.compile.outputs.BUILT_ARCHIVE }}
+            ${{ steps.compile.outputs.BUILT_CHECKSUM }}
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+
+      - name: Zip
+        run: |
+          zip -r x86_64-pc-windows-gnu.zip artifacts/x86_64-pc-windows-gnu
+          zip -r x86_64-apple-darwin.zip artifacts/x86_64-apple-darwin
+          tar -czf x86_64-unknown-linux-musl.tar.gz artifacts/x86_64-unknown-linux-musl
+
+      - uses: dev-drprasad/delete-tag-and-release@085c6969f18bad0de1b9f3fe6692a3cd01f64fe5
+        with:
+          delete_release: true
+          tag_name: nightly
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get short SHA
+        id: vars
+        run: echo "sha_short=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+
+      - name: Create the release
+        uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: nightly
+          name: Nightly Build ${{ steps.vars.outputs.sha_short }}
+          draft: false
+          prerelease: false
+          files: |
+            x86_64-pc-windows-gnu.zip
+            x86_64-apple-darwin.zip
+            x86_64-unknown-linux-musl.tar.gz
