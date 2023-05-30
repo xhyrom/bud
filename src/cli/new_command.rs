@@ -7,5 +7,5 @@ pub fn new() -> Command {
 }
 
 pub fn handle(_: &ArgMatches) {
-    println!("New command");
+    unimplemented!()
 }

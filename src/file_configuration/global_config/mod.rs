@@ -8,18 +8,18 @@ use serde::{Deserialize, Serialize};
 
 use crate::constants;
 
-mod license_field;
+mod licenses_field;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Config {
-    #[serde(default = "license_field::default_values::license")]
-    pub license: license_field::License,
+    #[serde(default = "licenses_field::default_values::licenses")]
+    pub licenses: licenses_field::Licenses,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
-            license: license_field::default_values::license(),
+            licenses: licenses_field::default_values::licenses(),
         }
     }
 }
@@ -29,6 +29,7 @@ lazy_static! {
 }
 
 lazy_static! {
+    #[derive(Debug)]
     pub static ref CONFIG: Config = {
         let config_path = CONFIG_PATH.lock().unwrap().to_string();
         match Config::new(config_path) {

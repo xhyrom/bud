@@ -1,0 +1,24 @@
+[licenses]
+# The default license to use when creating a new project
+default = "MIT"
+copyright_holder = ""
+
+# Custom licenses
+[licenses.custom.mit]
+# The name of the license
+name = "MIT"
+# The path to the license file
+body = """
+The MIT License (MIT)
+
+...
+"""
+
+[licenses.custom.apache2]
+name = "Apache 2.0"
+body = """
+Apache License
+Version 2.0, January 2004
+
+...
+"""
