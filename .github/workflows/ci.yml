@@ -78,7 +78,7 @@ jobs:
         id: vars
         run: |
           executable_path=${{ matrix.executable_path }}
-          executable_path=${executable_path/\{target\}/linux}
+          executable_path=${executable_path/\{target\}/${{ matrix.target }}}
           echo "executable_path=$executable_path" > $GITHUB_OUTPUT
 
       - name: Upload artifact
