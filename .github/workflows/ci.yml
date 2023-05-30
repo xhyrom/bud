@@ -122,13 +122,14 @@ jobs:
 
       - name: Zip
         run: |
-          zip -r x86_64-pc-windows-gnu.zip artifacts/x86_64-pc-windows-gnu
-          zip -r x86_64-apple-darwin.zip artifacts/x86_64-apple-darwin
-          tar -czf x86_64-unknown-linux-gnu.tar.gz artifacts/x86_64-unknown-linux-gnu
-          tar -czf x86_64-unknown-linux-musl.tar.gz artifacts/x86_64-unknown-linux-musl
+          mkdir result
+          zip -r result/86_64-pc-windows-gnu.zip artifacts/x86_64-pc-windows-gnu
+          zip -r result/x86_64-apple-darwin.zip artifacts/x86_64-apple-darwin
+          tar -czf result/x86_64-unknown-linux-gnu.tar.gz artifacts/x86_64-unknown-linux-gnu
+          tar -czf result/x86_64-unknown-linux-musl.tar.gz artifacts/x86_64-unknown-linux-musl
 
-          zip -r i686-pc-windows-gnu.zip artifacts/i686-pc-windows-gnu
-          tar -czf i686-unknown-linux-gnu.tar.gz artifacts/i686-unknown-linux-gnu
+          zip -r result/i686-pc-windows-gnu.zip artifacts/i686-pc-windows-gnu
+          tar -czf result/i686-unknown-linux-gnu.tar.gz artifacts/i686-unknown-linux-gnu
 
       - uses: dev-drprasad/delete-tag-and-release@085c6969f18bad0de1b9f3fe6692a3cd01f64fe5
         with:
@@ -152,6 +153,4 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            x86_64-pc-windows-gnu.zip
-            x86_64-apple-darwin.zip
-            x86_64-unknown-linux-musl.tar.gz
+            result/*
