@@ -14,6 +14,7 @@ fn command() -> Command {
         .args(&[arg!(--"global-config-path" [path] "Path to the global config file")])
         .disable_version_flag(true)
         .arg_required_else_help(true)
+        .subcommand_required(true)
 }
 
 pub fn handle() {
@@ -25,6 +26,6 @@ pub fn handle() {
     match matches.subcommand() {
         Some(("new", matches)) => new_command::handle(matches),
         Some(("version", _)) => version_command::handle(),
-        _ => {}
+        _ => unreachable!(),
     }
 }

@@ -2,7 +2,7 @@ use clap::Command;
 use logger::info;
 
 pub fn new() -> Command {
-    Command::new("version").about("Show the version")
+    Command::new("version").about("Print version")
 }
 
 pub fn handle() {
