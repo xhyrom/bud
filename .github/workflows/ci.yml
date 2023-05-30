@@ -37,10 +37,13 @@ jobs:
         include:
           - target: x86_64-pc-windows-gnu
             archive: zip
+            executable_path: target/{target}/release/bud.exe
           - target: x86_64-unknown-linux-gnu
             archive: tar.gz
+            executable_path: target/{target}/release/bud
           - target: x86_64-apple-darwin
             archive: zip
+            executable_path: target/release/bud
             runs-on: macos-latest
 
     steps:
@@ -71,29 +74,20 @@ jobs:
         if: matrix.target == 'x86_64-apple-darwin'
         run: cargo build --release --workspace
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        if: matrix.target == 'x86_64-pc-windows-gnu'
-        with:
-          name: ${{ matrix.target }}
-          path: |
-            target/${{ matrix.target }}/release/bud.exe
+      - name: Executable path
+        id: vars
+        run: |
+          executable_path=${{ matrix.executable_path }}
+          executable_path=${executable_path/\{target\}/linux}
+          echo "executable_path=$executable_path" > $GITHUB_OUTPUT
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
-        if: matrix.target != 'x86_64-pc-windows-gnu'
         with:
           name: ${{ matrix.target }}
           path: |
-            target/${{ matrix.target }}/release/bud
+            ${{ steps.vars.outputs.executable_path }}
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        if: matrix.target != 'x86_64-apple-darwin'
-        with:
-          name: ${{ matrix.target }}
-          path: |
-            target/release/bud
   release:
     name: Release
     runs-on: ubuntu-latest
