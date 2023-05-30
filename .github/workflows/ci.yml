@@ -65,7 +65,7 @@ jobs:
 
       - name: Compile
         if: matrix.target != 'x86_64-apple-darwin'
-        run: cargo build --release --workspace --target=${{ matrix.target }}
+        run: cross build --release --workspace --target=${{ matrix.target }}
 
       - name: Compile
         if: matrix.target == 'x86_64-apple-darwin'
