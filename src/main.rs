@@ -1,9 +1,7 @@
 mod cli;
-mod config;
 mod constants;
+mod file_configuration;
 
 fn main() {
     cli::handle();
-
-    println!("🌷 Bud {:?}", config::CONFIG.license);
 }

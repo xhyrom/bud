@@ -1,6 +1,6 @@
 use clap::{arg, Command};
 
-use crate::{config::CONFIG_PATH, constants};
+use crate::file_configuration;
 
 mod new_command;
 mod version_command;
@@ -11,7 +11,8 @@ fn command() -> Command {
         .author("xHyroM")
         .subcommand(new_command::new())
         .subcommand(version_command::new())
-        .args(&[arg!(--"config-path" [path] "Path to the config file")])
+        .args(&[arg!(--"global-config-path" [path] "Path to the global config file")])
+        .disable_version_flag(true)
         .arg_required_else_help(true)
 }
 
@@ -19,16 +20,7 @@ pub fn handle() {
     let cmd = command();
     let matches = cmd.get_matches();
 
-    let mut config_path = CONFIG_PATH.lock().unwrap();
-    *config_path = if matches.contains_id("config-path") {
-        matches
-            .get_one::<String>("config-path")
-            .unwrap()
-            .to_string()
-    } else {
-        format!("{}/config.toml", *constants::FOLDER)
-    };
-    drop(config_path);
+    file_configuration::initialize(&matches);
 
     match matches.subcommand() {
         Some(("new", matches)) => new_command::handle(matches),

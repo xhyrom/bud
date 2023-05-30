@@ -1,3 +1,4 @@
+#[cfg(debug_assertions)]
 pub const BLACK: &str = "\x1b[30m";
 pub const RED: &str = "\x1b[31m";
 pub const GREEN: &str = "\x1b[32m";

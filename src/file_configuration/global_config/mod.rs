@@ -1,6 +1,5 @@
 use std::{
     fs::{self},
-    io,
     sync::Mutex,
 };
 
@@ -35,7 +34,7 @@ lazy_static! {
         match Config::new(config_path) {
             Ok(config) => config,
             Err(err) => {
-                logger::error!("Failed to load config: {}", err);
+                logger::error!("Failed to load global config: {}", err);
                 std::process::exit(1);
             }
         }
@@ -44,27 +43,39 @@ lazy_static! {
 
 impl Config {
     pub fn new(config_path: String) -> Result<Self, Box<dyn std::error::Error>> {
-        Self::initialize(&config_path)?;
+        if fs::metadata(&config_path).is_err() {
+            logger::debug!("Global config file not found, creating one...");
+            fs::create_dir_all((*constants::DATA_FOLDER).clone())?;
+
+            let config = Self::default();
+            config.save()?;
+
+            return Ok(config);
+        }
 
         let contents = fs::read_to_string(&config_path)?;
         let config = toml::from_str(&contents)?;
         Ok(config)
     }
 
-    fn initialize(config_path: &String) -> io::Result<()> {
-        fs::create_dir_all((*constants::FOLDER).clone())?;
+    pub fn serialize(&self) -> Result<String, Box<dyn std::error::Error>> {
+        let config = toml::to_string(&self)?;
+        Ok(config)
+    }
 
-        if fs::metadata(config_path).is_err() {
-            return match fs::File::create(config_path) {
-                Ok(_) => {
-                    let config = toml::to_string(&Config::default()).unwrap_or(String::new());
-                    fs::write(config_path, config)?;
-                    Ok(())
-                }
-                Err(err) => Err(err),
-            };
-        }
+    pub fn save(&self) -> Result<(), Box<dyn std::error::Error>> {
+        let config_path = CONFIG_PATH.lock().unwrap().to_string();
+        let config = self.serialize()?;
 
+        fs::write(config_path, config)?;
         Ok(())
     }
+}
+
+pub fn setup(config_path: String) {
+    let mut config_path_mutex = CONFIG_PATH.lock().unwrap();
+    *config_path_mutex = config_path;
+    drop(config_path_mutex);
+
+    lazy_static::initialize(&CONFIG);
 }
