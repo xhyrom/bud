@@ -28,7 +28,7 @@ jobs:
 
   compile:
     name: Compile ${{ matrix.target }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs_on && matrix.runs_on || 'ubuntu-latest'  }}
     if: github.event_name == 'push'
     needs: check
     strategy:
@@ -41,6 +41,7 @@ jobs:
             archive: tar.gz
           - target: x86_64-apple-darwin
             archive: zip
+            runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v3
@@ -49,18 +50,26 @@ jobs:
         run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
       - name: Install podman
+        if: matrix.target != 'x86_64-apple-darwin'
         run: |
           sudo apt-get -y upgrade
           sudo apt-get -y install podman
 
       - name: Install cross
+        if: matrix.target != 'x86_64-apple-darwin'
         run: cargo install cross
 
       - name: Add target
+        if: matrix.target != 'x86_64-apple-darwin'
         run: rustup target add ${{ matrix.target }}
 
       - name: Compile
+        if: matrix.target != 'x86_64-apple-darwin'
         run: cargo build --release --workspace --target=${{ matrix.target }}
+
+      - name: Compile
+        if: matrix.target == 'x86_64-apple-darwin'
+        run: cargo build --release --workspace
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -77,6 +86,14 @@ jobs:
           name: ${{ matrix.target }}
           path: |
             target/${{ matrix.target }}/release/bud
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        if: matrix.target != 'x86_64-apple-darwin'
+        with:
+          name: ${{ matrix.target }}
+          path: |
+            target/release/bud
   release:
     name: Release
     runs-on: ubuntu-latest
