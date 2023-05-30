@@ -28,7 +28,7 @@ jobs:
 
   compile:
     name: Compile ${{ matrix.target }}
-    runs-on: ${{ matrix.runs_on && matrix.runs_on || 'ubuntu-latest'  }}
+    runs-on: ${{ matrix.runs-on && matrix.runs-on || 'ubuntu-latest'  }}
     if: github.event_name == 'push'
     needs: check
     strategy:
@@ -38,28 +38,28 @@ jobs:
           # windows
           - target: x86_64-pc-windows-gnu
             archive: zip
-            executable_path: target/{target}/release/bud.exe
+            executable-path: target/{target}/release/bud.exe
           # linux
           - target: x86_64-unknown-linux-gnu
             archive: tar.gz
-            executable_path: target/{target}/release/bud
+            executable-path: target/{target}/release/bud
           - target: x86_64-unknown-linux-musl
             archive: tar.gz
-            executable_path: target/{target}/release/bud
+            executable-path: target/{target}/release/bud
           # darwin
           - target: x86_64-apple-darwin
             archive: zip
-            executable_path: target/release/bud
+            executable-path: target/release/bud
             runs-on: macos-latest
           # i686
           # windows
           - target: i686-pc-windows-gnu
             archive: zip
-            executable_path: target/{target}/release/bud.exe
+            executable-path: target/{target}/release/bud.exe
           # linux
           - target: i686-unknown-linux-gnu
             archive: tar.gz
-            executable_path: target/{target}/release/bud
+            executable-path: target/{target}/release/bud
 
     steps:
       - uses: actions/checkout@v3
@@ -92,7 +92,7 @@ jobs:
       - name: Executable path
         id: vars
         run: |
-          executable_path=${{ matrix.executable_path }}
+          executable_path=${{ matrix.executable-path }}
           executable_path=${executable_path/\{target\}/${{ matrix.target }}}
           echo "executable_path=$executable_path" > $GITHUB_OUTPUT
 
