@@ -109,7 +109,7 @@ jobs:
         run: |
           zip -r x86_64-pc-windows-gnu.zip artifacts/x86_64-pc-windows-gnu
           zip -r x86_64-apple-darwin.zip artifacts/x86_64-apple-darwin
-          tar -czf x86_64-unknown-linux-musl.tar.gz artifacts/x86_64-unknown-linux-musl
+          tar -czf x86_64-unknown-linux-gnu.tar.gz artifacts/x86_64-unknown-linux-gnu
 
       - uses: dev-drprasad/delete-tag-and-release@085c6969f18bad0de1b9f3fe6692a3cd01f64fe5
         with:
