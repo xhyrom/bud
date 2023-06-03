@@ -12,12 +12,16 @@ pub struct Licenses {
     pub custom: HashMap<String, Custom>,
 
     #[serde(skip)]
-    github_licenses: HashMap<String, String>,
+    github_licenses: HashMap<String, GithubLicense>,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
 struct GithubLicense {
     pub key: String,
     pub name: String,
+    pub permissions: Option<Vec<String>>,
+    pub conditions: Option<Vec<String>>,
+    pub limitations: Option<Vec<String>>,
 }
 
 impl Licenses {
@@ -25,8 +29,14 @@ impl Licenses {
         self.custom.get(name)
     }
 
-    pub fn github_licenses() {
-        unimplemented!()
+    pub fn github_licenses(&mut self) {
+        let body = reqwest::blocking::get(
+            "https://raw.githubusercontent.com/xHyroM/bud/main/licenses/licenses.json",
+        )
+        .unwrap()
+        .json::<HashMap<String, GithubLicense>>();
+
+        self.github_licenses = body.unwrap();
     }
 }
 
