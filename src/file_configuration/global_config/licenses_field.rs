@@ -9,14 +9,14 @@ pub struct Licenses {
     #[serde(default = "default_values::copyright_holder")]
     pub copyright_holder: String,
     #[serde(default = "default_values::custom")]
-    pub custom: HashMap<String, Custom>,
+    pub custom: HashMap<String, License>,
 
     #[serde(skip)]
-    github_licenses: HashMap<String, GithubLicense>,
+    pub default_licenses: Vec<License>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct GithubLicense {
+pub struct License {
     pub key: String,
     pub name: String,
     pub permissions: Option<Vec<String>>,
@@ -25,18 +25,14 @@ struct GithubLicense {
 }
 
 impl Licenses {
-    pub fn get(&self, name: &str) -> Option<&Custom> {
-        self.custom.get(name)
-    }
-
-    pub fn github_licenses(&mut self) {
+    pub fn fetch_default_licenses(&mut self) {
         let body = reqwest::blocking::get(
             "https://raw.githubusercontent.com/xHyroM/bud/main/licenses/licenses.json",
         )
         .unwrap()
-        .json::<HashMap<String, GithubLicense>>();
+        .json::<Vec<License>>();
 
-        self.github_licenses = body.unwrap();
+        self.default_licenses = body.unwrap();
     }
 }
 
@@ -54,7 +50,7 @@ pub mod default_values {
             default: default(),
             copyright_holder: copyright_holder(),
             custom: custom(),
-            github_licenses: HashMap::new(),
+            default_licenses: vec![],
         }
     }
 
@@ -66,7 +62,7 @@ pub mod default_values {
         String::from("Your Name")
     }
 
-    pub fn custom() -> HashMap<String, super::Custom> {
+    pub fn custom() -> HashMap<String, super::License> {
         HashMap::new()
     }
 }

@@ -1,6 +1,6 @@
 use std::{
     fs::{self},
-    sync::Mutex,
+    sync::{Mutex, MutexGuard},
 };
 
 use lazy_static::lazy_static;
@@ -30,7 +30,7 @@ lazy_static! {
 
 lazy_static! {
     #[derive(Debug)]
-    pub static ref CONFIG: Config = {
+    pub static ref CONFIG: Mutex<Config> = Mutex::new({
         let config_path = CONFIG_PATH.lock().unwrap().to_string();
         match Config::new(config_path) {
             Ok(config) => config,
@@ -39,7 +39,7 @@ lazy_static! {
                 std::process::exit(1);
             }
         }
-    };
+    });
 }
 
 impl Config {
@@ -70,6 +70,11 @@ impl Config {
 
         fs::write(config_path, config)?;
         Ok(())
+    }
+
+    pub fn instance() -> MutexGuard<'static, Config> {
+        let config = CONFIG.lock().unwrap();
+        config
     }
 }
 
