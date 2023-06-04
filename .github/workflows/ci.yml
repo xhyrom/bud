@@ -67,11 +67,12 @@ jobs:
       - name: Install rust
         run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
-      - name: Install podman
+      - name: Install dependencies
         if: matrix.target != 'x86_64-apple-darwin'
         run: |
           sudo apt-get -y upgrade
           sudo apt-get -y install podman
+          sudo apt-get -y install libssl-dev
 
       - name: Install cross
         if: matrix.target != 'x86_64-apple-darwin'
