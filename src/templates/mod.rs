@@ -1,0 +1,3 @@
+struct Template {
+    url: String,
+}
