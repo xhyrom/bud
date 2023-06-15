@@ -1,0 +1,5 @@
+# Prompts that will be asked to the user
+prompts = [
+  { prompt = "Write something", type = "string" },
+  { prompt = "Do you like me?", type = "boolean" }
+]
