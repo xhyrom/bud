@@ -1,6 +1,8 @@
 use clap::{arg, ArgMatches, Command};
 use logger::info;
 
+use crate::templates::Template;
+
 pub fn new() -> Command {
     Command::new("new")
         .about("Create a new project")
@@ -14,4 +16,9 @@ pub fn handle(matches: &ArgMatches) {
         .to_owned();
 
     info!("Creating new project from template: {}", template);
+
+    let template = Template::new(None, template);
+    template.download();
+
+    info!("Successfully cloned template")
 }
