@@ -40,6 +40,7 @@ pub fn handle() {
     match matches.subcommand() {
         Some(("new", matches)) => new_command::handle(matches),
         Some(("version", _)) => version_command::handle(),
+        #[cfg(debug_assertions)]
         Some(("test", _)) => test_command::handle(),
         _ => unreachable!(),
     }
